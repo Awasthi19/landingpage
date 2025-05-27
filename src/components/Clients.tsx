@@ -3,7 +3,7 @@ import Image from "next/image";
 const clientImages = [
   "/Baijanath-stamp.png",
   "/aristologo.png",
-  "/smartshipping.jpg"
+  "/smartshipping.jpg",
 ];
 
 export default function Clients() {
@@ -14,10 +14,12 @@ export default function Clients() {
           <div className="inline-block rounded-lg bg-[#06476d]/10 px-3 py-1 text-sm text-[#06476d] mb-4">
             Our Clients
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Trusted by Industry Leaders</h2>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Trusted by Industry Leaders
+          </h2>
           <p className="mt-4 max-w-[700px] text-muted-foreground">
-            We have partnered with forward-thinking companies across various industries to deliver exceptional
-            results.
+            We have partnered with forward-thinking companies across various
+            industries to deliver exceptional results.
           </p>
         </div>
 
@@ -27,13 +29,16 @@ export default function Clients() {
               key={index}
               className="flex items-center justify-center p-4 transition-all hover:grayscale-0 hover:scale-110"
             >
-              <Image
-                src={src}
-                alt={`Client ${index + 1}`}
-                width={120}
-                height={120}
-                className="object-contain h-15 w-auto rounded-full"
-              />
+              <div style={{ width: 120, height: 120, position: "relative" }}>
+                <Image
+                  src={src}
+                  alt={`Client ${index + 1}`}
+                  fill
+                  style={{ objectFit: "contain", borderRadius: "50%" }}
+                  sizes="120px"
+                  priority
+                />
+              </div>
             </div>
           ))}
         </div>
