@@ -1,22 +1,22 @@
 export default function Testimonials() {
   const testimonials = [
     {
-      name: "Sarah Johnson",
-      position: "CTO, TechCorp",
+      name: "Shree Baijanath Gramin Bidhdhut Sahakari Sanstha",
+      position: "Electricity Cooperative Office",
       quote:
-        "PSI Technologies transformed our digital infrastructure with innovative solutions that exceeded our expectations. Their team's expertise and dedication made all the difference.",
+        "The utility software provided by PSI Technologies has streamlined our billing and customer management processes. It’s reliable, easy to use, and tailored exactly to our operational needs.",
     },
     {
-      name: "Michael Chen",
-      position: "CEO, Innovate Inc",
+      name: "Ram Prasad",
+      position: "System Admin, Electricity Dept.",
       quote:
-        "Working with PSI Technologies was a game-changer for our business. Their artistic approach to problem-solving delivered results that truly stand out in our industry.",
+        "The integration of online payments and dynamic QR codes has drastically improved our payment collection process. PSI Technologies delivered a seamless solution that just works.",
     },
     {
-      name: "Emily Rodriguez",
-      position: "Marketing Director, Global Brands",
+      name: "Principal, Aristo Higher Secondary School",
+      position: "School Administration",
       quote:
-        "The team at PSI Technologies understood our vision perfectly and delivered a solution that not only looks stunning but performs exceptionally well. Highly recommended!",
+        "PSI Technologies developed a custom ERP system for our school that handles student records, attendance, and finance with ease. It’s made administration so much more efficient.",
     },
   ];
 

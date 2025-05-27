@@ -12,10 +12,12 @@ export default function Contact() {
             <div className="inline-block rounded-lg bg-[#06476d]/10 px-3 py-1 text-sm text-[#06476d] mb-4">
               Get In Touch
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">Let&apos;s Start a Conversation</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">
+              Let&apos;s Start a Conversation
+            </h2>
             <p className="text-muted-foreground mb-8 max-w-md">
-              Ready to transform your business with innovative digital solutions? Contact us today to discuss your
-              project.
+              Ready to transform your business with innovative digital
+              solutions? Contact us today to discuss your project.
             </p>
 
             <div className="space-y-6">
@@ -25,7 +27,20 @@ export default function Contact() {
                 </div>
                 <div className="ml-4">
                   <h3 className="text-base font-medium">Our Location</h3>
-                  <p className="text-sm text-muted-foreground mt-1">123 Innovation Drive, Tech City, TC 10101</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    <a
+                      href="https://maps.google.com/?q=Krishnapur,+Kanchanpur+District,+Sudurpaschim+Province,+Nepal"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      H01 Mahendra Highway
+                      <br />
+                      Krishnapur, Kanchanpur District, Sudurpaschim Province,
+                      Nepal
+                      <br />
+                      PO Box 10400
+                    </a>
+                  </p>
                 </div>
               </div>
 
@@ -35,7 +50,13 @@ export default function Contact() {
                 </div>
                 <div className="ml-4">
                   <h3 className="text-base font-medium">Email Us</h3>
-                  <p className="text-sm text-muted-foreground mt-1">info@psitechnologies.com</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    <a
+                      href="mailto:m.info.psi@gmail.com"
+                    >
+                      m.info.psi@gmail.com
+                    </a>
+                  </p>
                 </div>
               </div>
 
@@ -45,7 +66,14 @@ export default function Contact() {
                 </div>
                 <div className="ml-4">
                   <h3 className="text-base font-medium">Call Us</h3>
-                  <p className="text-sm text-muted-foreground mt-1">+1 (555) 123-4567</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    <a
+                      href="tel:+9779862466900"
+                      
+                    >
+                      +977 9862466900
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>
@@ -78,9 +106,15 @@ export default function Contact() {
                 <label htmlFor="message" className="text-sm font-medium">
                   Message
                 </label>
-                <Textarea id="message" placeholder="Your message" className="min-h-[120px]" />
+                <Textarea
+                  id="message"
+                  placeholder="Your message"
+                  className="min-h-[120px]"
+                />
               </div>
-              <Button className="w-full bg-[#06476d] hover:bg-[#053a5a] text-white">Send Message</Button>
+              <Button className="w-full bg-[#06476d] hover:bg-[#053a5a] text-white">
+                Send Message
+              </Button>
             </div>
           </div>
         </div>

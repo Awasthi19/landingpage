@@ -4,12 +4,12 @@ import { ArrowRight } from "lucide-react";
 
 export default function Works() {
   const projects = [
-    { title: "Digital Transformation", category: "Enterprise Solution" },
-    { title: "E-Commerce Platform", category: "Web Development" },
-    { title: "Mobile Banking App", category: "App Development" },
-    { title: "AI-Powered Analytics", category: "Data Science" },
-    { title: "IoT Smart Home", category: "Connected Devices" },
-    { title: "Immersive VR Experience", category: "Virtual Reality" },
+    { title: "Digital Transformation", category: "Enterprise Solution", src: "/cloudcomputingteam.jpg" },
+    { title: "E-Commerce Platform", category: "Web Development", src: "/ecommerce.jpg" },
+    { title: "Mobile Banking App", category: "App Development", src: "/fintechapp.png" },
+    { title: "AI-Powered Analytics", category: "Data Science", src: "/download.png" },
+    { title: "IoT Smart Home", category: "Connected Devices", src: "/iot.jpg" },
+    { title: "Immersive VR Experience", category: "Virtual Reality", src: "/vr.jpg" },
   ];
 
   return (
@@ -30,7 +30,7 @@ export default function Works() {
             <div key={index} className="group relative overflow-hidden rounded-lg">
               <div className="aspect-[4/3] w-full bg-gradient-to-br from-[#06476d] to-[#0a7bb8] overflow-hidden">
                 <Image
-                  src={`/placeholder.svg?height=400&width=600&text=Project+${index + 1}`}
+                  src={project.src}
                   alt={project.title}
                   width={600}
                   height={400}
