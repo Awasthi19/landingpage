@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-20 items-center justify-between">
+      <div className="w-full max-w-screen-xl mx-auto flex h-20 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-2">
           <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#06476d]">
             <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl">

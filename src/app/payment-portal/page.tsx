@@ -27,7 +27,7 @@ export default function PaymentPortal() {
   const [isLoading, setIsLoading] = useState(false)
 
   const electricityOffices = [
-    { value: "pseb", label: "Shree Baijanath Gramin Biddhut Sahakari Sanstha Ltd. AK22" },
+    { value: "pseb", label: "Baijanath Gramin Ltd. AK22" },
   ]
 
   const handleGetPaymentDetails = async () => {
