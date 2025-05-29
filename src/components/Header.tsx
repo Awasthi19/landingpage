@@ -19,7 +19,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white backdrop-blur supports-[backdrop-filter]:bg-white/95">
-      <div className="w-full max-w-screen-xl mx-auto flex h-20 items-center justify-between px-4 sm:px-6">
+      <div className="w-full max-w-screen-xl mx-auto flex h-[88px] items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-2">
           <div className="relative h-[40px] w-[40px] overflow-hidden ">
             <Image
@@ -32,7 +32,7 @@ export default function Header() {
               priority
             />
           </div>
-          <span className="text-xl font-bold tracking-tight">
+          <span className="text-2xl font-bold tracking-tight">
             PSI Technologies
           </span>
         </div>
