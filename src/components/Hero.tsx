@@ -9,7 +9,7 @@ import { GlobeDemo } from "./world";
 export default function Hero() {
   const circles = useMemo(() => {
     return Array.from({ length: 10 }).map((_, i) => {
-      const size = Math.random() * 100 ; // size between 50 and 350
+      const size = Math.random() * 100; // size between 50 and 350
       return {
         id: i,
         width: size,
@@ -44,9 +44,10 @@ export default function Hero() {
       <div className="relative z-10">
         <div className="flex justify-between">
           <div className="mx-[24px] max-w-3xl text-left md:text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+            <h1 className="pb-[3px] text-4xl font-bold tracking-tight bg-gradient-to-r from-[#D4FFEC] via-[#57F2CC] to-[#4596FB] bg-clip-text text-transparent sm:text-5xl md:text-6xl">
               Innovative Solutions for a Digital Future
             </h1>
+
             <p className="mt-6 text-lg text-white/80">
               PSI Technologies delivers cutting-edge digital solutions that
               transform businesses and create exceptional user experiences.
