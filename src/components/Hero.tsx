@@ -53,15 +53,19 @@ export default function Hero() {
               transform businesses and create exceptional user experiences.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-white text-[#06476d] hover:bg-white/90">
-                Explore Our Work <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="border-white bg-[#0b2e43] text-white hover:bg-white/10"
-              >
-                Contact Us
-              </Button>
+              <a href="#works">
+                <Button className="bg-white text-[#06476d] hover:bg-white/90">
+                  Explore Our Work <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </a>
+              <a href="#contact">
+                <Button
+                  variant="outline"
+                  className="border-white bg-[#0b2e43] text-white hover:bg-white/10"
+                >
+                  Contact Us
+                </Button>
+              </a>
             </div>
           </div>
         </div>
