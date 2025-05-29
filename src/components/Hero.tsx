@@ -8,23 +8,27 @@ import { GlobeDemo } from "./world";
 
 export default function Hero() {
   const circles = useMemo(() => {
-    return Array.from({ length: 20 }).map((_, i) => ({
-      id: i,
-      width: Math.random() * 300 + 50,
-      height: Math.random() * 300 + 50,
-      top: Math.random() * 100,
-      left: Math.random() * 100,
-      opacity: Math.random() * 0.5,
-    }));
+    return Array.from({ length: 10 }).map((_, i) => {
+      const size = Math.random() * 100 ; // size between 50 and 350
+      return {
+        id: i,
+        width: size,
+        height: size,
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        opacity: Math.random() * 0.5 + 0.5,
+      };
+    });
   }, []);
+
   return (
-    <section className="relative overflow-hidden bg-[#06476d] pt-[43px] pb-[10px] md:pt-32 md:pb-10">
+    <section className="relative overflow-hidden bg-[#06476d] pt-[43px] pb-[10px] md:pt-32 md:pb-12">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-grid-white/20 [mask-image:linear-gradient(0deg,white,transparent)]" />
         {circles.map((circle) => (
           <div
             key={circle.id}
-            className="absolute rounded-full bg-white/10"
+            className="absolute rounded-full bg-white"
             style={{
               width: `${circle.width}px`,
               height: `${circle.height}px`,
@@ -37,9 +41,9 @@ export default function Hero() {
         ))}
       </div>
 
-      <div className="container relative z-10">
+      <div className="relative z-10">
         <div className="flex justify-between">
-          <div className="mx-2 max-w-3xl text-center">
+          <div className="mx-[24px] max-w-3xl text-left md:text-center">
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
               Innovative Solutions for a Digital Future
             </h1>
@@ -67,12 +71,12 @@ export default function Hero() {
       </div>
 
       {/* Feature Banner Card */}
-      <div className="pb-8 md:pb-5 mx-8 md:mx-8 mt-12 relative z-10">
+      <div className="pb-2 md:pb-5 mx-[24px] md:mx-8 mt-12 relative z-10">
         <Card className="bg-white shadow-lg">
           <CardContent className="py-6 px-6 md:py-4 md:px-6">
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
               {/* SaaS Dashboard Illustration */}
-              <div className="w-full md:w-48 h-32 md:h-24 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center relative overflow-hidden flex-shrink-0">
+              <div className="w-full md:w-48 h-[88px] md:h-[88px] bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center relative overflow-hidden flex-shrink-0">
                 <div className="absolute inset-0 bg-grid-blue-500/10"></div>
                 <div className="relative z-10 flex items-center space-x-2">
                   <div className="w-8 h-8 md:w-10 md:h-10 bg-[#06476d] rounded-lg flex items-center justify-center">
@@ -87,7 +91,7 @@ export default function Hero() {
               </div>
 
               {/* Content */}
-              <div className="flex-1 text-center md:text-left space-y-4">
+              <div className="flex-1 text-left space-y-2">
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                   Join 10,000+ teams already scaling with PSI
                 </h2>

@@ -21,14 +21,14 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-white backdrop-blur supports-[backdrop-filter]:bg-white/95">
       <div className="w-full max-w-screen-xl mx-auto flex h-[88px] items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-2">
-          <div className="relative h-[40px] w-[40px] overflow-hidden ">
+          <div className="relative h-[30px] w-[30px] overflow-hidden ">
             <Image
               src="/hlpsi.svg"
               alt="PSI Technologies Logo"
               fill
               className="h-full w-full"
               style={{ objectFit: "contain", borderRadius: "50%" }}
-              sizes="120px"
+              sizes="100px"
               priority
             />
           </div>
