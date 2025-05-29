@@ -1,8 +1,8 @@
 import Image from "next/image";
 
 const clientImages = [
-  "/Baijanath-stamp.png",
   "/aristologo.png",
+  "/Baijanath-stamp.png",
   "/smartshipping.jpg",
 ];
 
@@ -27,10 +27,7 @@ export default function Clients() {
         <div className="relative w-full overflow-hidden">
           <div className="flex animate-scroll gap-12 w-max">
             {[...clientImages, ...clientImages].map((src, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-center p-4"
-              >
+              <div key={index} className="flex items-center justify-center p-4">
                 <div style={{ width: 120, height: 120, position: "relative" }}>
                   <Image
                     src={src}
