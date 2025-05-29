@@ -24,7 +24,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-[#06476d] pt-[43px] pb-[10px] md:pt-32 md:pb-12">
+    <section className="relative overflow-hidden bg-[#06476d] pt-[43px] pb-[24px] md:pt-32 md:pb-12">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-grid-white/20 [mask-image:linear-gradient(0deg,white,transparent)]" />
         {circles.map((circle) => (
