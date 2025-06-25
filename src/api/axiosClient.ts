@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Define and export the base URL
-export const baseURL = "http://13.234.122.212:8081";
+export const baseURL = "https://api.psinepal.com.np";
 // export const baseURL = "http://localhost:8081";
 
 const axiosClient = axios.create({
