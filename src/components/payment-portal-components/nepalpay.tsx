@@ -56,53 +56,55 @@ const NepalPayPopup: React.FC<NepalPayPopupProps> = ({
   useEffect(() => {
     const fetchQrCodeDetails = async () => {
       try {
-        const response = await generateQR(amount.toString(), customerId, tenant);
+        const response = await generateQR(
+          amount.toString(),
+          customerId,
+          tenant
+        );
         console.log("Full API response:", response);
+
         if (response.responseStatus === "SUCCESS") {
           setQrCodeDetails(response);
 
-          // Check status via WebSocket
-          const statusResponse = await checkStatusViaWebSocket(
-            response.data.validationTraceId, tenant
-          );
+          try {
+            // Check status via WebSocket
+            const statusResponse = await checkStatusViaWebSocket(
+              response.data.validationTraceId,
+              tenant
+            );
 
-          // simulate the WebSocket response for demo purposes
-          // setTimeout(() => {
-          //   console.log("Simulating WebSocket response");
-          //   setIsWebSocketResponseReceived(true);
-          // }, 6000); // Simulate a WebSocket response after 3 seconds
-
-          if (statusResponse.status === "COMPLETED") {
-            console.log("Payment successful:", statusResponse);
-            setIsPaymentCompleted(true);
-            onPaymentSuccess();
-          } else {
-            console.log("Payment failed:", statusResponse);
-            onPaymentFailed();
+            if (statusResponse.status === "COMPLETED") {
+              console.log("Payment successful:", statusResponse);
+              setIsPaymentCompleted(true);
+              onPaymentSuccess();
+            } else {
+              console.log("Payment failed:", statusResponse);
+              onPaymentFailed();
+            }
+          } catch (statusError) {
+            console.error(
+              "Error checking payment status via WebSocket:",
+              statusError
+            );
+            onPaymentFailed(); // Optional: you may still want to trigger a failure handler
+          } finally {
+            setIsWebSocketResponseReceived(true);
           }
-
-          // simulate the successful payment for demo purposes
-          // setTimeout(() => {
-          //   console.log("Simulating successful payment");
-          //   setIsPaymentCompleted(true);
-          //   onPaymentSuccess();
-          // }, 3000); // Simulate a successful payment after 3 seconds
-
-          // simulate the failed payment for demo purposes
-          // setTimeout(() => {
-          //   console.log("Simulating failed payment");
-          //   setIsPaymentCompleted(false);
-          //   onPaymentFailed();
-          // }, 3000); // Simulate a failed payment after 3 seconds
-
+        } else {
+          console.warn(
+            "QR generation failed or returned non-success:",
+            response
+          );
           setIsWebSocketResponseReceived(true);
+          onPaymentFailed();
         }
-      } catch (error) {
-        console.error("Error fetching QR code details:", error);
-        // Even if there's an error, mark WebSocket as "responded" so button can be enabled
+      } catch (qrError) {
+        console.error("Error generating QR code:", qrError);
         setIsWebSocketResponseReceived(true);
+        onPaymentFailed();
       }
     };
+
     if (isOpen && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
       fetchQrCodeDetails();
@@ -115,7 +117,8 @@ const NepalPayPopup: React.FC<NepalPayPopupProps> = ({
     setIsCheckingStatus(true);
     try {
       const reportResponse = await checkStatusViaReport(
-        qrCodeDetails.data.validationTraceId, tenant
+        qrCodeDetails.data.validationTraceId,
+        tenant
       );
       console.log("Report status response:", reportResponse);
 
@@ -126,14 +129,6 @@ const NepalPayPopup: React.FC<NepalPayPopupProps> = ({
       } else {
         onPaymentFailed();
       }
-
-      // simulate the report response for demo purposes
-      // setTimeout(() => {
-      //   console.log("Simulating report response");
-      //   setIsPaymentCompleted(true);
-      //   onPaymentSuccess();
-      // }, 3000); // Simulate a successful report response after 3 seconds
-
     } catch (error) {
       console.error("Error checking status via report:", error);
       onPaymentFailed();

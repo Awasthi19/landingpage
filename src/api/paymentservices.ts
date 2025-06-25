@@ -23,6 +23,17 @@ export const checkStatusViaWebSocket = async (validationTraceId: string, tenant:
   return response.data;
 };
 
+
+// export const checkStatusViaWebSocket = async (validationTraceId: string, tenant: string) => {
+//   console.log('Simulating WebSocket status check for validationTraceId:', validationTraceId, 'tenant:', tenant);
+//   return {
+//     status: "FAILED", // or "TIMEOUT", "CANCELLED", etc.
+//     message: "Simulated payment failure",
+//   };
+// };
+
+
+
 export const checkStatusViaReport = async (validationTraceId: string, tenant: string) => {
   const response = await axiosClient.post('/api/onlinepay/nepalpay/transaction-report/single', 
     null,
