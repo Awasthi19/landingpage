@@ -118,6 +118,12 @@ export default function PaymentPortal() {
       alert("No payment details available");
       return;
     }
+
+    if (paymentDetails.billAmount < 1) {
+      alert("Payment amount must be at least 1 to proceed.");
+      return;
+    }
+
     setShowNepalPayPopup(true);
 
     // Scroll to NepalPay popup after it shows (only on mobile)
@@ -187,7 +193,7 @@ export default function PaymentPortal() {
                 </div>
               )}
 
-              {showNepalPayPopup && paymentDetails && (
+              {showNepalPayPopup && paymentDetails && paymentDetails.billAmount >= 1 && (
                 <NepalPayPopup
                   isOpen={showNepalPayPopup}
                   amount={paymentDetails.billAmount}

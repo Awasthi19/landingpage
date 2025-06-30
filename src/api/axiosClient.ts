@@ -1,15 +1,15 @@
 import axios from "axios";
 
 // Define and export the base URL
-export const baseURL = "https://api.psinepal.com.np";
-// export const baseURL = "http://localhost:8081";
+// export const baseURL = "https://api.psinepal.com.np";
+export const baseURL = "http://localhost:8081";
 
 const axiosClient = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 30000,
+  timeout: 40000,
 });
 
 // // Request Interceptor (Attach sessionStorage JWT if available)
