@@ -32,8 +32,13 @@ export default function Header() {
               priority
             />
           </div>
-          <span className="text-2xl font-bold tracking-tight">
-            PSI Technologies
+          <span className="text-2xl tracking-tight">
+            <span className="font-bold" style={{ color: "rgb(1, 72, 109)" }}>
+              PSI
+            </span>{" "}
+            <span className="font-normal" style={{ color: "rgb(1, 156, 159)" }}>
+              Technologies
+            </span>
           </span>
         </div>
 

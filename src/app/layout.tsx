@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "PSI Technologies",
-  description: "psi technologies is a leading provider of innovative software solutions, specializing in web and mobile applications, cloud computing, and AI-driven analytics.",
+  description: "PSI Technologies is a leading provider of innovative software solutions, specializing in web, desktop and mobile applications and AI/ML driven solutions.",
 };
 
 export default function RootLayout({
