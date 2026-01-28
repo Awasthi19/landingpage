@@ -29,6 +29,8 @@ interface Props {
   onPaymentFailed: (error?: string) => void;
   maxDuration?: number;
   onAnalyticsEvent?: (event: string, data?: Record<string, any>) => void;
+  bankLogoSrc?: string; // Add this new prop
+  bankLogoAlt?: string; // Add this new prop
 }
 
 /* ============================================================
@@ -54,6 +56,8 @@ const NepalPayPopup: React.FC<Props> = ({
   onPaymentFailed,
   maxDuration = DEFAULT_MAX_DURATION,
   onAnalyticsEvent,
+  bankLogoSrc,
+  bankLogoAlt,
 }) => {
   const [qr, setQr] = useState<QrCodeDetails | null>(null);
   const [loading, setLoading] = useState(false);
@@ -90,7 +94,7 @@ const NepalPayPopup: React.FC<Props> = ({
         ...data,
       });
     },
-    [onAnalyticsEvent, amount, customerId, tenant]
+    [onAnalyticsEvent, amount, customerId, tenant],
   );
 
   useEffect(() => {
@@ -223,7 +227,11 @@ const NepalPayPopup: React.FC<Props> = ({
           });
         } catch (e: any) {
           // Ignore abort/cancel errors - these are expected during cleanup
-          if (e.name === "AbortError" || e.name === "CanceledError" || e.code === "ERR_CANCELED") {
+          if (
+            e.name === "AbortError" ||
+            e.name === "CanceledError" ||
+            e.code === "ERR_CANCELED"
+          ) {
             return;
           }
 
@@ -243,7 +251,7 @@ const NepalPayPopup: React.FC<Props> = ({
 
       poll();
     },
-    [tenant, maxDuration, stopPolling, trackEvent]
+    [tenant, maxDuration, stopPolling, trackEvent],
   );
 
   const generateQRWithRetry = useCallback(
@@ -286,7 +294,11 @@ const NepalPayPopup: React.FC<Props> = ({
         startPolling(res.data.validationTraceId);
       } catch (e: any) {
         // Ignore abort/cancel errors - these are expected during cleanup
-        if (e.name === "AbortError" || e.name === "CanceledError" || e.code === "ERR_CANCELED") {
+        if (
+          e.name === "AbortError" ||
+          e.name === "CanceledError" ||
+          e.code === "ERR_CANCELED"
+        ) {
           return;
         }
 
@@ -310,7 +322,7 @@ const NepalPayPopup: React.FC<Props> = ({
         }
       }
     },
-    [amount, customerId, tenant, startPolling, trackEvent]
+    [amount, customerId, tenant, startPolling, trackEvent],
   );
 
   useEffect(() => {
@@ -484,10 +496,19 @@ const NepalPayPopup: React.FC<Props> = ({
             )}
 
             {/* Lumbini Logo */}
-            <div className="flex justify-center p-2.5">
+            {/* <div className="flex justify-center p-2.5">
               <img
                 src="/img/lumbini-logo.png"
                 alt="Lumbini"
+                className="w-4/5"
+              />
+            </div> */}
+
+            {/* Bank Logo */}
+            <div className="flex justify-center p-2.5">
+              <img
+                src={bankLogoSrc || "/img/image-not-found.png"}
+                alt={bankLogoAlt || "Bank"}
                 className="w-4/5"
               />
             </div>

@@ -32,7 +32,7 @@ export default function PaymentPortal() {
   const [selectedOffice, setSelectedOffice] = useState<string>("");
   const [customerId, setCustomerId] = useState<string>("");
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(
-    null
+    null,
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showNepalPayPopup, setShowNepalPayPopup] = useState<boolean>(false);
@@ -43,8 +43,20 @@ export default function PaymentPortal() {
   const nepalPayRef = useRef<HTMLDivElement | null>(null);
 
   const electricityOffices: ElectricityOffice[] = [
-    { value: "tenant1", label: "Baijanath Gramin Ltd. AK22" },
+    { value: "tenant1", label: "Baijanath Gra. B. Ltd. AK22" },
+    { value: "tenant2", label: "Baitada Gra. B. Ltd. LR.17B" },
   ];
+
+  const bankLogos: Record<string, { src: string; alt: string }> = {
+    tenant1: {
+      src: "/img/lumbini-logo.png",
+      alt: "Lumbini Bikas Bank",
+    },
+    tenant2: {
+      src: "/img/nmb-logo.png", 
+      alt: "NMB Bank",
+    },
+  };
 
   // Check if device is mobile
   useEffect(() => {
@@ -60,7 +72,7 @@ export default function PaymentPortal() {
 
   // Smooth scroll function
   const scrollToElement = (
-    elementRef: React.RefObject<HTMLDivElement | null>
+    elementRef: React.RefObject<HTMLDivElement | null>,
   ) => {
     if (isMobile && elementRef.current) {
       const elementTop = elementRef.current.offsetTop;
@@ -193,17 +205,21 @@ export default function PaymentPortal() {
                 </div>
               )}
 
-              {showNepalPayPopup && paymentDetails && paymentDetails.billAmount >= 1 && (
-                <NepalPayPopup
-                  isOpen={showNepalPayPopup}
-                  amount={paymentDetails.billAmount}
-                  customerId={customerId}
-                  tenant={selectedOffice}
-                  onClose={() => setShowNepalPayPopup(false)}
-                  onPaymentSuccess={handleNepalPaySuccess}
-                  onPaymentFailed={handleNepalPayFailed}
-                />
-              )}
+              {showNepalPayPopup &&
+                paymentDetails &&
+                paymentDetails.billAmount >= 1 && (
+                  <NepalPayPopup
+                    isOpen={showNepalPayPopup}
+                    amount={paymentDetails.billAmount}
+                    customerId={customerId}
+                    tenant={selectedOffice}
+                    onClose={() => setShowNepalPayPopup(false)}
+                    onPaymentSuccess={handleNepalPaySuccess}
+                    onPaymentFailed={handleNepalPayFailed}
+                    bankLogoSrc={bankLogos[selectedOffice]?.src}
+                    bankLogoAlt={bankLogos[selectedOffice]?.alt}
+                  />
+                )}
             </div>
           </div>
 
