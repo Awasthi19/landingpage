@@ -554,7 +554,7 @@ export default function RestroeliteLanding() {
       <nav className={`nav${scrolled ? " scrolled" : ""}`}>
         <div className="nav-logo">
           {/* Replace src with your actual logo path e.g. /logo.png */}
-          <img src="/Restroelite/icon.png" alt="Restroelite Logo" className="nav-logo-img" />
+          <img src="/restroelite/icon.png" alt="Restroelite Logo" className="nav-logo-img" />
           <div className="nav-logo-divider" />
           <span className="nav-brand">Restroelite </span>
         </div>
@@ -576,8 +576,8 @@ export default function RestroeliteLanding() {
         {/* Video BG — replace src with your actual 30s video */}
         <div className="hero-video-wrap">
           <video autoPlay muted loop playsInline>
-            <source src="/Restroelite/hero-video.webm" type="video/webm" />
-            <source src="/Restroelite/hero-video.mp4" type="video/mp4" />
+            <source src="/restroelite/hero-video.webm" type="video/webm" />
+            <source src="/restroelite/hero-video.mp4" type="video/mp4" />
           </video>
         </div>
         <div className="hero-overlay" />
