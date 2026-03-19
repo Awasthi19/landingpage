@@ -124,12 +124,22 @@ const FontLoader = () => (
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       overflow: hidden; text-align: center;
     }
-    .hero-video-wrap {
-      position: absolute; inset: 0; z-index: 0;
-    }
-    .hero-video-wrap video {
-      width: 100%; height: 100%; object-fit: cover;
-    }
+.hero-video-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-video-wrap video {
+  position: absolute;
+  top: -60px;
+  left: 0;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  object-fit: cover;
+}
 .hero-overlay {
   position: absolute;
   inset: 0;
@@ -503,18 +513,18 @@ const roleData = {
 };
 
 // ─── Main Component ────────────────────────────────────────────────────────────
-export default function SaveurLanding() {
+export default function RestroeliteLanding() {
   const [scrolled, setScrolled] = useState(false);
   const [activeRole, setActiveRole] = useState("Owner");
 
-  const message = "Hi Saveur, I would like to request a free demo.";
+  const message = "Hi Restroelite, I would like to request a free demo.";
 
   const whatsappDemoUrl = `https://wa.me/9779821618622?text=${encodeURIComponent(message)}`;
 
   const downloadLinks = {
-    windows: "https://drive.google.com/uc?export=download&id=13Gx-zgx-fTGLYKUMk1fAcq7L6TaSUg_W",
-    android: "https://drive.google.com/uc?export=download&id=1Q4sNpTpJ-id6zOp3_8drLRgtdOkscBBT",
-    web: "https://app.saveur.example.com",
+    windows: "https://drive.google.com/uc?export=download&id=1lASzB6jpIZa1T5JCPUkJTMIJPmheu0nq",
+    android: "https://drive.google.com/uc?export=download&id=1WTfC_DmBRR-S83qd58FxUucpNiupoT1-",
+    web: "https://restroelite.psinepal.com.np",
   };
 
   useEffect(() => {
@@ -544,9 +554,9 @@ export default function SaveurLanding() {
       <nav className={`nav${scrolled ? " scrolled" : ""}`}>
         <div className="nav-logo">
           {/* Replace src with your actual logo path e.g. /logo.png */}
-          <img src="/saveur/icon.png" alt="Saveur Logo" className="nav-logo-img" />
+          <img src="/Restroelite/icon.png" alt="Restroelite Logo" className="nav-logo-img" />
           <div className="nav-logo-divider" />
-          <span className="nav-brand">Saveur </span>
+          <span className="nav-brand">Restroelite </span>
         </div>
         <div className="nav-links">
           <a href="#features">Features</a>
@@ -566,8 +576,8 @@ export default function SaveurLanding() {
         {/* Video BG — replace src with your actual 30s video */}
         <div className="hero-video-wrap">
           <video autoPlay muted loop playsInline>
-            <source src="/saveur/hero-video.webm" type="video/webm" />
-            <source src="/saveur/hero-video.mp4" type="video/mp4" />
+            <source src="/Restroelite/hero-video.webm" type="video/webm" />
+            <source src="/Restroelite/hero-video.mp4" type="video/mp4" />
           </video>
         </div>
         <div className="hero-overlay" />
@@ -578,7 +588,7 @@ export default function SaveurLanding() {
             finance from <em>a complete software.</em>
           </h1>
           <p className="hero-sub">
-            Saveur brings your front-of-house, inventory, and accounts under one roof —<br />
+            Restroelite brings your front-of-house, inventory, and accounts under one roof —<br />
             built for independent restaurants and growing chains alike.
           </p>
           <div className="hero-ctas">
@@ -638,7 +648,7 @@ export default function SaveurLanding() {
       <section id="how" className="section how-bg center">
         <div className="section-label">How it works</div>
         <h2 className="section-title">Three steps to a clean close</h2>
-        <p className="section-sub">From the first order to the last report — Saveur runs every moment in between.</p>
+        <p className="section-sub">From the first order to the last report — Restroelite runs every moment in between.</p>
 
         <div className="steps-row">
           {[
@@ -800,7 +810,7 @@ export default function SaveurLanding() {
             Ready to switch?
           </div>
           <h2>Get a tailored walkthrough<br />for your restaurant</h2>
-          <p>We'll show you Saveur set up exactly for your menu, your branches, and your team.</p>
+          <p>We'll show you Restroelite set up exactly for your menu, your branches, and your team.</p>
           <button className="btn-cta-white" onClick={() => window.open(whatsappDemoUrl, "_blank", "noopener,noreferrer")}>
             Request Setup Call →
           </button>
@@ -815,8 +825,8 @@ export default function SaveurLanding() {
         <div className="footer-top">
           <div className="footer-brand">
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-              <img src="/saveur/icon.png" alt="Saveur" style={{ height: 32, width: "auto" }} />
-              <div className="footer-brand-name">Saveur</div>
+              <img src="/Restroelite/icon.png" alt="Restroelite" style={{ height: 32, width: "auto" }} />
+              <div className="footer-brand-name">Restroelite</div>
             </div>
             <p>Restaurant management software built for the way real kitchens and dining rooms actually run.</p>
           </div>
@@ -841,7 +851,7 @@ export default function SaveurLanding() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2025 Saveur. All rights reserved.</p>
+          <p>© 2025 Restroelite. All rights reserved.</p>
           <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>Run service, stock, and finance from one restaurant operating system.</p>
         </div>
       </footer>
