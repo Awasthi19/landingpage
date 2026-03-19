@@ -75,6 +75,12 @@ export default function Header() {
             Payment Services
           </Link>
           <Link
+            href="/saveur"
+            className="text-sm font-medium hover:text-[#06476d] transition-colors"
+          >
+            Saveur
+          </Link>
+          <Link
             href="#contact"
             className="text-sm font-medium hover:text-[#06476d] transition-colors"
           >
