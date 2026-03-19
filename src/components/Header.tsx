@@ -75,10 +75,10 @@ export default function Header() {
             Payment Services
           </Link>
           <Link
-            href="/saveur"
+            href="/restroelite"
             className="text-sm font-medium hover:text-[#06476d] transition-colors"
           >
-            Saveur
+            Restroelite
           </Link>
           <Link
             href="#contact"
