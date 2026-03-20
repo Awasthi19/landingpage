@@ -522,8 +522,8 @@ export default function RestroeliteLanding() {
   const whatsappDemoUrl = `https://wa.me/9779821618622?text=${encodeURIComponent(message)}`;
 
   const downloadLinks = {
-    windows: "https://drive.google.com/uc?export=download&id=1lASzB6jpIZa1T5JCPUkJTMIJPmheu0nq",
-    android: "https://drive.google.com/uc?export=download&id=1WTfC_DmBRR-S83qd58FxUucpNiupoT1-",
+    windows: "https://github.com/Restroelite/restroelite-desktop/releases/download/v5.2.3/restroelite.Setup.4.6.0.exe",
+    android: "https://github.com/Restroelite/restroelite-mobile/releases/download/v5.2.3/app-release.apk",
     web: "https://restroelite.psinepal.com.np",
   };
 
