@@ -30,6 +30,7 @@ interface Props {
   isOpen: boolean;
   amount: number;
   customerId: string;
+  customerName: string;
   tenant: string;
   onClose: () => void;
   onPaymentSuccess: () => void;
@@ -59,6 +60,7 @@ const FonePayPopup: React.FC<Props> = ({
   isOpen,
   amount,
   customerId,
+  customerName,
   tenant,
   onClose,
   onPaymentSuccess,
@@ -222,6 +224,7 @@ const FonePayPopup: React.FC<Props> = ({
           amount.toString(),
           customerId,
           tenant,
+          customerName,
           { signal: controller.signal },
         );
         if (!isMountedRef.current) return;

@@ -168,6 +168,7 @@ export default function PaymentPortal() {
     isOpen: showPopup,
     amount: paymentDetails?.billAmount ?? 0,
     customerId,
+    customerName: paymentDetails?.customerName ?? "",
     tenant: selectedOffice,
     onClose: () => {
       setShowPopup(false);

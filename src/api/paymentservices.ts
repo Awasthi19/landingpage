@@ -1,4 +1,4 @@
-import axiosClient from './axiosClient';
+import axiosClient from "./axiosClient";
 
 /* ============================================================
    TYPE DEFINITIONS
@@ -6,7 +6,6 @@ import axiosClient from './axiosClient';
 interface ApiOptions {
   signal?: AbortSignal;
 }
-
 
 /**
  * Get payment details for a customer
@@ -17,14 +16,19 @@ interface ApiOptions {
 export const getPaymentDetails = async (
   customerId: string,
   tenant: string,
-  options?: ApiOptions
+  options?: ApiOptions,
 ) => {
-  console.log('Fetching payment details for customerId:', customerId, 'tenant:', tenant);
-  const response = await axiosClient.get('/api/charges/topay-online', {
+  console.log(
+    "Fetching payment details for customerId:",
+    customerId,
+    "tenant:",
+    tenant,
+  );
+  const response = await axiosClient.get("/api/charges/topay-online", {
     params: { customerId, tenant },
     signal: options?.signal, // ← Frontend cancellation
   });
-  console.log('Payment details response:', response.data);
+  console.log("Payment details response:", response.data);
   return response.data;
 };
 
@@ -33,15 +37,17 @@ export const getPaymentDetails = async (
  */
 export const getOnlinePaymentMethod = async (
   tenant: string,
-  options?: ApiOptions
+  options?: ApiOptions,
 ) => {
-  const response = await axiosClient.get('/api/payment-methods/online-default', {
-    params: { tenant },
-    signal: options?.signal,
-  });
+  const response = await axiosClient.get(
+    "/api/payment-methods/online-default",
+    {
+      params: { tenant },
+      signal: options?.signal,
+    },
+  );
   return response.data; // { id, name, prefix, isCounterDefault, isOnlineDefault }
 };
-
 
 /* ============================================================
    PAYMENT API FUNCTIONS
@@ -58,17 +64,17 @@ export const generateQR = async (
   transactionAmount: string,
   customerId: string,
   tenant: string,
-  options?: ApiOptions
+  options?: ApiOptions,
 ) => {
   const response = await axiosClient.post(
-    '/api/onlinepay/nepalpay/generate-qr',
+    "/api/onlinepay/nepalpay/generate-qr",
     null,
     {
       params: { transactionAmount, customerId, tenant },
       signal: options?.signal, // ← Frontend cancellation
-    }
+    },
   );
-  console.log('Payment response:', response);
+  console.log("Payment response:", response);
   return response.data;
 };
 
@@ -81,18 +87,18 @@ export const generateQR = async (
 export const checkStatusViaWebSocket = async (
   validationTraceId: string,
   tenant: string,
-  options?: ApiOptions
+  options?: ApiOptions,
 ) => {
   const response = await axiosClient.post(
-    '/api/onlinepay/nepalpay/checkstatus-ws',
+    "/api/onlinepay/nepalpay/checkstatus-ws",
     null,
     {
       params: { requestId: validationTraceId, tenant },
       timeout: 300000, // 5 minutes (5 * 60 * 1000)
       signal: options?.signal, // ← Frontend cancellation
-    }
+    },
   );
-  console.log('Status response:', response);
+  console.log("Status response:", response);
   return response.data;
 };
 
@@ -105,40 +111,45 @@ export const checkStatusViaWebSocket = async (
 export const checkStatusViaReport = async (
   validationTraceId: string,
   tenant: string,
-  options?: ApiOptions
+  options?: ApiOptions,
 ) => {
   const response = await axiosClient.post(
-    '/api/onlinepay/nepalpay/transaction-report/single',
+    "/api/onlinepay/nepalpay/transaction-report/single",
     null,
     {
       params: { requestId: validationTraceId, tenant },
       signal: options?.signal, // ← Frontend cancellation
-    }
+    },
   );
-  console.log('Status response:', response);
+  console.log("Status response:", response);
   return response.data;
 };
 
-/**
- * Generate FonePay QR code
- */
 export const generateFonePayQR = async (
   transactionAmount: string,
   customerId: string,
   tenant: string,
-  options?: ApiOptions
+  customerName: string,
+  options?: ApiOptions,
 ) => {
+  const paddedId = customerId.padStart(4, "0");
+
+  const cleanName = customerName.replace(/\s+/g, "");
+  const shortName =
+    cleanName.length > 10 ? cleanName.slice(0, 15) + "..." : cleanName;
+
   const response = await axiosClient.post(
-    '/api/onlinepay/fonepay/generate-qr',
+    "/api/onlinepay/fonepay/generate-qr",
     {
       transactionAmount,
       customerId: Number(customerId),
-      remarks1: 'online',
-      remarks2: 'payment',
+      remarks1: "ELEC_BILL",
+      remarks2: `C-${paddedId}_${shortName}`,
       tenant,
     },
-    { signal: options?.signal }
+    { signal: options?.signal },
   );
+
   return response.data;
 };
 
@@ -148,15 +159,15 @@ export const generateFonePayQR = async (
 export const checkFonePayStatus = async (
   prn: string,
   tenant: string,
-  options?: ApiOptions
+  options?: ApiOptions,
 ) => {
   const response = await axiosClient.post(
-    '/api/onlinepay/fonepay/check-status',
+    "/api/onlinepay/fonepay/check-status",
     null,
     {
       params: { prn, tenant },
       signal: options?.signal,
-    }
+    },
   );
   return response.data; // { prn, paymentStatus: "PAID" | "PENDING", ... }
 };

@@ -30,6 +30,7 @@ interface Props {
   isOpen: boolean;
   amount: number;
   customerId: string;
+  customerName?: string;
   tenant: string;
   onClose: () => void;
   onPaymentSuccess: () => void;
