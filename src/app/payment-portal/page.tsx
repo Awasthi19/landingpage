@@ -5,11 +5,15 @@ import Header from "@/components/payment-portal-components/header";
 import PaymentForm from "@/components/payment-portal-components/paymentform";
 import BillDetails from "@/components/payment-portal-components/billdetails";
 import NepalPayPopup from "@/components/payment-portal-components/nepalpay";
+import FonePayPopup from "@/components/payment-portal-components/fonepay";
 import Features from "@/components/payment-portal-components/features";
+import { Loader2 } from "lucide-react";
 
-import { getPaymentDetails } from "../../api/paymentservices";
+import {
+  getPaymentDetails,
+  getOnlinePaymentMethod,
+} from "../../api/paymentservices";
 
-// Define types
 interface PaymentDetails {
   customerName: string;
   address: string;
@@ -28,6 +32,8 @@ interface ElectricityOffice {
   label: string;
 }
 
+type PaymentGateway = "NepalPay" | "FonePay" | null;
+
 export default function PaymentPortal() {
   const [selectedOffice, setSelectedOffice] = useState<string>("");
   const [customerId, setCustomerId] = useState<string>("");
@@ -35,12 +41,15 @@ export default function PaymentPortal() {
     null,
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showNepalPayPopup, setShowNepalPayPopup] = useState<boolean>(false);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [activeGateway, setActiveGateway] = useState<PaymentGateway>(null);
 
-  // Refs for scrolling
+  // Global preload state — QR is being fetched before the popup opens
+  const [isPreloadingQR, setIsPreloadingQR] = useState<boolean>(false);
+
   const billDetailsRef = useRef<HTMLDivElement | null>(null);
-  const nepalPayRef = useRef<HTMLDivElement | null>(null);
+  const paymentRef = useRef<HTMLDivElement | null>(null);
 
   const electricityOffices: ElectricityOffice[] = [
     { value: "tenant1", label: "Baijanath Gra. B. Ltd. AK22" },
@@ -48,74 +57,64 @@ export default function PaymentPortal() {
   ];
 
   const bankLogos: Record<string, { src: string; alt: string }> = {
-    tenant1: {
-      src: "/img/lumbini-logo.png",
-      alt: "Lumbini Bikas Bank",
-    },
-    tenant2: {
-      src: "/img/nmb-logo.png", 
-      alt: "NMB Bank",
-    },
+    tenant1: { src: "/img/lumbini-logo.png", alt: "Lumbini Bikas Bank" },
+    tenant2: { src: "/img/nmb-logo.png", alt: "NMB Bank" },
   };
 
-  // Check if device is mobile
   useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 1280); // xl breakpoint is 1280px
-    };
-
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 1280);
     checkIsMobile();
     window.addEventListener("resize", checkIsMobile);
-
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  // Smooth scroll function
   const scrollToElement = (
     elementRef: React.RefObject<HTMLDivElement | null>,
   ) => {
     if (isMobile && elementRef.current) {
-      const elementTop = elementRef.current.offsetTop;
-      const offset = 160; // Adjust this value to control how much less to scroll
-
       window.scrollTo({
-        top: elementTop - offset,
+        top: elementRef.current.offsetTop - 160,
         behavior: "smooth",
       });
     }
   };
 
-  // Fetch payment details
+  const handleOfficeChange = useCallback(async (office: string) => {
+    setSelectedOffice(office);
+    setActiveGateway(null);
+    setShowPopup(false);
+    setPaymentDetails(null);
+    if (!office) return;
+    try {
+      const method = await getOnlinePaymentMethod(office);
+      setActiveGateway(method?.name === "FonePay" ? "FonePay" : "NepalPay");
+    } catch {
+      setActiveGateway("NepalPay");
+    }
+  }, []);
+
   const handleGetPaymentDetails = useCallback(async () => {
     if (!selectedOffice || !customerId) {
       alert("Please select an electricity office and enter customer ID");
       return;
     }
-
     setIsLoading(true);
     try {
       const data = await getPaymentDetails(customerId, selectedOffice);
-
-      // Map the response to match the PaymentDetails interface
       const mappedDetails: PaymentDetails = {
         customerName: data.customerName,
         address: data.address,
         meterSerialNumber: data.meterSerialNumber,
         customerType: data.customerType,
         billAmount: data.billAmount,
-        charges: data.charges.map((charge: Charge) => ({
-          id: charge.id,
-          description: charge.description,
-          amount: charge.amount,
+        charges: data.charges.map((c: Charge) => ({
+          id: c.id,
+          description: c.description,
+          amount: c.amount,
         })),
       };
-
       setPaymentDetails(mappedDetails);
-
-      // Scroll to bill details after data loads (only on mobile)
-      setTimeout(() => {
-        scrollToElement(billDetailsRef);
-      }, 100);
+      setTimeout(() => scrollToElement(billDetailsRef), 100);
     } catch (error) {
       console.error("Failed to fetch payment details:", error);
       alert("Failed to fetch payment details");
@@ -124,44 +123,93 @@ export default function PaymentPortal() {
     }
   }, [selectedOffice, customerId, isMobile]);
 
-  // Handle payment initiation
+  // Key change: handlePayment triggers a full-screen preloader, then opens the
+  // popup only after the popup component signals it has its QR ready.
+  // We do this by setting isPreloadingQR = true, opening the popup (which starts
+  // fetching internally), and showing a full-screen overlay. The popup notifies
+  // us via onQRReady (new prop) so we can hide the overlay.
   const handlePayment = useCallback(() => {
     if (!paymentDetails) {
       alert("No payment details available");
       return;
     }
-
     if (paymentDetails.billAmount < 1) {
       alert("Payment amount must be at least 1 to proceed.");
       return;
     }
 
-    setShowNepalPayPopup(true);
+    // If popup is already mounted, don't re-trigger the preloader
+    if (showPopup) {
+      setTimeout(() => scrollToElement(paymentRef), 100);
+      return;
+    }
 
-    // Scroll to NepalPay popup after it shows (only on mobile)
-    setTimeout(() => {
-      scrollToElement(nepalPayRef);
-    }, 100);
-  }, [paymentDetails, isMobile]);
+    setIsPreloadingQR(true);
+    setShowPopup(true);
+    setTimeout(() => scrollToElement(paymentRef), 100);
+  }, [paymentDetails, showPopup, isMobile]);
 
-  // Handle NepalPay success
-  const handleNepalPaySuccess = useCallback(() => {
+  // Called by popup once the QR string is ready — dismiss the overlay, reveal popup
+  const handleQRReady = useCallback(() => {
+    setIsPreloadingQR(false);
+  }, []);
+
+  // If QR generation fails, also dismiss the overlay so error state shows inside popup
+  const handlePaymentFailed = useCallback((error?: string) => {
+    setIsPreloadingQR(false);
+    console.log("Payment failed", error);
+  }, []);
+
+  const handlePaymentSuccess = useCallback(() => {
     console.log("Payment successful");
   }, []);
 
-  // Handle NepalPay failure
-  const handleNepalPayFailed = useCallback(() => {
-    console.log("Payment failed");
-  }, []);
+  const popupProps = {
+    isOpen: showPopup,
+    amount: paymentDetails?.billAmount ?? 0,
+    customerId,
+    tenant: selectedOffice,
+    onClose: () => {
+      setShowPopup(false);
+      setIsPreloadingQR(false);
+    },
+    onPaymentSuccess: handlePaymentSuccess,
+    onPaymentFailed: handlePaymentFailed,
+    onQRReady: handleQRReady,
+    bankLogoSrc: bankLogos[selectedOffice]?.src,
+    bankLogoAlt: bankLogos[selectedOffice]?.alt,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
+
+      {/* Full-screen QR preload overlay */}
+      {isPreloadingQR && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-5">
+          <div className="bg-white rounded-2xl px-10 py-8 flex flex-col items-center gap-4 shadow-xl">
+            <Loader2
+              className="animate-spin text-[#06476d]"
+              size={48}
+              strokeWidth={1.5}
+            />
+            <div className="text-center">
+              <p className="text-gray-900 font-semibold text-lg">
+                Preparing your payment
+              </p>
+              <p className="text-gray-500 text-sm mt-1">
+                Generating a secure QR code…
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex text-center justify-center mb-5 gap-2">
             <div className="flex items-center justify-center">
-              <div className="p-2 bg-[#06476d] rounded-full ">
+              <div className="p-2 bg-[#06476d] rounded-full">
                 <Zap className="h-5 w-5 text-white" />
               </div>
             </div>
@@ -178,7 +226,7 @@ export default function PaymentPortal() {
           <div className="grid gap-8 xl:grid-cols-3">
             <PaymentForm
               selectedOffice={selectedOffice}
-              setSelectedOffice={setSelectedOffice}
+              setSelectedOffice={handleOfficeChange}
               customerId={customerId}
               setCustomerId={setCustomerId}
               isLoading={isLoading}
@@ -190,35 +238,46 @@ export default function PaymentPortal() {
               <BillDetails
                 paymentDetails={paymentDetails}
                 handlePayment={handlePayment}
+                isLoading={isLoading}
               />
             </div>
 
-            <div ref={nepalPayRef}>
-              {!showNepalPayPopup && (
-                <div className="w-full max-w-[390px] h-[500px] bg-white overflow-hidden flex flex-col justify-center items-center rounded-xl border border-black/10 text-[var(--card-foreground)] shadow-md">
-                  <QrCode className="h-16 w-16 text-gray-300 mb-4" />
-                  <span className="text-gray-500 text-center px-4">
-                    Please click pay to view the QR code here. Take a screenshot
-                    and complete your payment, then return to validate the
-                    transaction.
-                  </span>
+            <div ref={paymentRef}>
+              {/* Placeholder — only shown when popup is NOT showing */}
+              {!showPopup && (
+                <div className="w-full max-w-[390px] h-[500px] bg-white overflow-hidden flex flex-col justify-center items-center rounded-xl border border-black/10 text-[var(--card-foreground)] shadow-md gap-4">
+                  <div className="p-5 rounded-full bg-gray-50 border border-gray-100">
+                    <QrCode className="h-12 w-12 text-gray-300" />
+                  </div>
+                  <div className="text-center px-6">
+                    <p className="text-gray-500 font-medium text-sm">
+                      QR code will appear here
+                    </p>
+                    <p className="text-gray-400 text-xs mt-1">
+                      Click Pay to generate your secure payment QR
+                    </p>
+                  </div>
                 </div>
               )}
 
-              {showNepalPayPopup &&
+              {/* Popup — mounted immediately so it can fetch QR in background.
+                  Hidden via invisible wrapper while preloading, revealed once onQRReady fires. */}
+              {showPopup &&
                 paymentDetails &&
                 paymentDetails.billAmount >= 1 && (
-                  <NepalPayPopup
-                    isOpen={showNepalPayPopup}
-                    amount={paymentDetails.billAmount}
-                    customerId={customerId}
-                    tenant={selectedOffice}
-                    onClose={() => setShowNepalPayPopup(false)}
-                    onPaymentSuccess={handleNepalPaySuccess}
-                    onPaymentFailed={handleNepalPayFailed}
-                    bankLogoSrc={bankLogos[selectedOffice]?.src}
-                    bankLogoAlt={bankLogos[selectedOffice]?.alt}
-                  />
+                  <div
+                    className={
+                      isPreloadingQR
+                        ? "invisible pointer-events-none"
+                        : "visible"
+                    }
+                  >
+                    {activeGateway === "FonePay" ? (
+                      <FonePayPopup {...popupProps} />
+                    ) : (
+                      <NepalPayPopup {...popupProps} />
+                    )}
+                  </div>
                 )}
             </div>
           </div>

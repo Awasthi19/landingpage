@@ -12,18 +12,18 @@ import {
   CheckCircle2,
   WifiOff,
 } from "lucide-react";
-import { generateQR, checkStatusViaReport } from "../../api/paymentservices";
+import {
+  generateFonePayQR,
+  checkFonePayStatus,
+} from "../../api/paymentservices";
 
 /* ============================================================
    TYPES
 ============================================================ */
-type QrCodeDetails = {
-  timestamp: string;
-  responseStatus: string;
-  data: {
-    qrString: string;
-    validationTraceId: string;
-  };
+type FonePayQrDetails = {
+  prn: string;
+  qrMessage: string;
+  status: string;
 };
 
 interface Props {
@@ -46,7 +46,7 @@ interface Props {
    CONSTANTS
 ============================================================ */
 const DEFAULT_MAX_DURATION = 10 * 60 * 1000;
-const FAST_POLL_INTERVAL = 5000;
+const POLL_INTERVAL = 5000;
 const SLOW_POLL_INTERVAL = 10000;
 const SLOW_POLL_THRESHOLD = 5 * 60 * 1000;
 const MAX_RETRY_ATTEMPTS = 3;
@@ -55,7 +55,7 @@ const RETRY_DELAY = 2000;
 /* ============================================================
    COMPONENT
 ============================================================ */
-const NepalPayPopup: React.FC<Props> = ({
+const FonePayPopup: React.FC<Props> = ({
   isOpen,
   amount,
   customerId,
@@ -69,7 +69,7 @@ const NepalPayPopup: React.FC<Props> = ({
   bankLogoSrc,
   bankLogoAlt,
 }) => {
-  const [qr, setQr] = useState<QrCodeDetails | null>(null);
+  const [qr, setQr] = useState<FonePayQrDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -149,9 +149,9 @@ const NepalPayPopup: React.FC<Props> = ({
   }, [isOpen, cleanup]);
 
   const startPolling = useCallback(
-    (traceId: string) => {
+    (prn: string) => {
       startTimeRef.current = Date.now();
-      trackEvent("polling_started", { traceId });
+      trackEvent("polling_started", { prn });
 
       const poll = async () => {
         if (!isMountedRef.current) return;
@@ -166,28 +166,26 @@ const NepalPayPopup: React.FC<Props> = ({
         if (!navigator.onLine) {
           pollingRef.current = setTimeout(
             poll,
-            elapsed < SLOW_POLL_THRESHOLD
-              ? FAST_POLL_INTERVAL
-              : SLOW_POLL_INTERVAL,
+            elapsed < SLOW_POLL_THRESHOLD ? POLL_INTERVAL : SLOW_POLL_INTERVAL,
           );
           return;
         }
         const controller = new AbortController();
         abortRef.current = controller;
         try {
-          const res = await checkStatusViaReport(traceId, tenant, {
+          const res = await checkFonePayStatus(prn, tenant, {
             signal: controller.signal,
           });
           if (!isMountedRef.current) return;
-          if (res?.responseStatus === "SUCCESS") {
+          if (res?.paymentStatus === "PAID") {
             stopPolling();
             setCompleted(true);
-            trackEvent("payment_success", { traceId, elapsed });
+            trackEvent("payment_success", { prn, elapsed });
             onSuccessRef.current();
             return;
           }
           trackEvent("polling_check", {
-            status: res?.responseStatus || "unknown",
+            status: res?.paymentStatus || "unknown",
             elapsed,
           });
         } catch (e: any) {
@@ -197,15 +195,13 @@ const NepalPayPopup: React.FC<Props> = ({
             e.code === "ERR_CANCELED"
           )
             return;
-          console.error("Polling error:", e);
+          console.error("FonePay polling error:", e);
           trackEvent("polling_error", { error: e.message, elapsed });
         }
         if (isMountedRef.current) {
           pollingRef.current = setTimeout(
             poll,
-            elapsed < SLOW_POLL_THRESHOLD
-              ? FAST_POLL_INTERVAL
-              : SLOW_POLL_INTERVAL,
+            elapsed < SLOW_POLL_THRESHOLD ? POLL_INTERVAL : SLOW_POLL_INTERVAL,
           );
         }
       };
@@ -222,27 +218,22 @@ const NepalPayPopup: React.FC<Props> = ({
       abortRef.current = controller;
       try {
         trackEvent("qr_generation_attempt", { attempt });
-        const res = await generateQR(amount.toString(), customerId, tenant, {
-          signal: controller.signal,
-        });
+        const res = await generateFonePayQR(
+          amount.toString(),
+          customerId,
+          tenant,
+          { signal: controller.signal },
+        );
         if (!isMountedRef.current) return;
-        if (!res || typeof res.responseStatus !== "string")
-          throw new Error("Invalid QR response format");
-        if (
-          res.responseStatus !== "SUCCESS" ||
-          !res.data?.qrString ||
-          !res.data?.validationTraceId
-        ) {
-          throw new Error(res.responseMessage || "QR generation failed");
+        if (res?.status !== "SUCCESS" || !res?.qrMessage || !res?.prn) {
+          throw new Error(res?.message || "FonePay QR generation failed");
         }
-        setQr(res);
+        setQr({ prn: res.prn, qrMessage: res.qrMessage, status: res.status });
         setRetryCount(0);
-        trackEvent("qr_generation_success", {
-          traceId: res.data.validationTraceId,
-        });
+        trackEvent("qr_generation_success", { prn: res.prn });
         // 🔑 Notify parent that QR is ready — parent hides full-screen overlay
         onQRReadyRef.current?.();
-        startPolling(res.data.validationTraceId);
+        startPolling(res.prn);
       } catch (e: any) {
         if (
           e.name === "AbortError" ||
@@ -250,7 +241,7 @@ const NepalPayPopup: React.FC<Props> = ({
           e.code === "ERR_CANCELED"
         )
           return;
-        console.error("QR generation error:", e);
+        console.error("FonePay QR generation error:", e);
         trackEvent("qr_generation_error", { error: e.message, attempt });
         if (isMountedRef.current && attempt < MAX_RETRY_ATTEMPTS) {
           setRetryCount(attempt + 1);
@@ -258,7 +249,7 @@ const NepalPayPopup: React.FC<Props> = ({
           return generateQRWithRetry(attempt + 1);
         }
         if (isMountedRef.current) {
-          setError("Unable to generate payment QR code. Please try again.");
+          setError("Unable to generate FonePay QR code. Please try again.");
           // Also notify parent on failure so overlay is dismissed
           onQRReadyRef.current?.();
           onFailedRef.current("QR generation failed");
@@ -300,14 +291,11 @@ const NepalPayPopup: React.FC<Props> = ({
 
   /* ── Inline panel layout (no fixed overlay) ─────────────────────── */
   return (
-    <div
-      className="w-full max-w-[390px] bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden flex flex-col"
-      data-testid="nepalpay-panel"
-    >
+    <div className="w-full max-w-[390px] bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden flex flex-col">
       {/* ── Header bar ── */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
         <div>
-          <p className="text-sm font-semibold text-gray-800">NepalPay</p>
+          <p className="text-sm font-semibold text-gray-800">FonePay</p>
           <p className="text-xs text-gray-400 mt-0.5">
             Scan QR to complete payment
           </p>
@@ -317,7 +305,6 @@ const NepalPayPopup: React.FC<Props> = ({
           disabled={loading && !error}
           className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-40"
           aria-label="Close"
-          data-testid="close-button"
         >
           <X size={16} className="text-gray-500" />
         </button>
@@ -338,7 +325,6 @@ const NepalPayPopup: React.FC<Props> = ({
         <div
           className="flex flex-col items-center justify-center gap-4 px-6 py-10 text-center flex-1"
           role="alert"
-          data-testid="error-state"
         >
           <div className="p-4 rounded-full bg-red-50">
             <AlertCircle className="text-red-500" size={32} />
@@ -350,7 +336,6 @@ const NepalPayPopup: React.FC<Props> = ({
           <div className="flex gap-2 mt-2">
             <button
               onClick={handleRetry}
-              data-testid="retry-button"
               className="flex items-center gap-2 px-4 py-2 bg-[#06476d] text-white text-sm font-medium rounded-lg hover:bg-[#053d5e] transition-colors"
             >
               <RefreshCw size={14} /> Try again
@@ -370,13 +355,13 @@ const NepalPayPopup: React.FC<Props> = ({
         <div className="flex flex-col items-center gap-4 px-5 pb-6 pt-2">
           {/* Gateway tagline */}
           <img
-            src="/img/nepalpayqrtagline.png"
-            alt="NepalPay"
+            src="/img/fonepayqrtagline.png"
+            alt="FonePay"
             className="h-8 object-contain"
           />
 
           {/* QR frame */}
-          <div className="relative" data-testid="qr-code-container">
+          <div className="relative">
             <div
               className={`p-3 rounded-2xl border border-1.5 transition-all duration-500 ${
                 completed
@@ -385,12 +370,12 @@ const NepalPayPopup: React.FC<Props> = ({
               }`}
             >
               <QRCodeSVG
-                value={qr.data.qrString}
+                value={qr.qrMessage}
                 size={190}
                 bgColor="transparent"
                 fgColor={completed ? "#16a34a" : "#111827"}
                 level="M"
-                aria-label="Payment QR Code"
+                aria-label="FonePay QR Code"
               />
               {/* Logo overlay — positioned on top of the excavated zone */}
               {!completed && (
@@ -413,16 +398,9 @@ const NepalPayPopup: React.FC<Props> = ({
               )}
             </div>
             {completed && (
-              <div
-                className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl"
-                data-testid="success-overlay"
-              >
+              <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl">
                 <div className="flex flex-col items-center gap-2">
-                  <CheckCircle2
-                    className="text-green-500"
-                    size={52}
-                    data-testid="success-icon"
-                  />
+                  <CheckCircle2 className="text-green-500" size={52} />
                   <p className="text-green-700 font-semibold text-sm">
                     Payment received!
                   </p>
@@ -457,7 +435,6 @@ const NepalPayPopup: React.FC<Props> = ({
                 ? "bg-green-500 text-white"
                 : "bg-gray-100 text-gray-500"
             }`}
-            data-testid="status-button"
           >
             {completed ? "✓ Payment Confirmed" : "Waiting for payment…"}
           </div>
@@ -466,7 +443,7 @@ const NepalPayPopup: React.FC<Props> = ({
           <div className="flex flex-col items-center gap-1.5 w-full">
             <p className="text-xs text-gray-400 font-medium">Pay using</p>
             <img
-              src="/img/pay-using.png"
+              src="/img/pay-using-fonepay.png"
               alt="Supported payment methods"
               className="h-7 object-contain"
             />
@@ -477,11 +454,8 @@ const NepalPayPopup: React.FC<Props> = ({
   );
 };
 
-/* ============================================================
-   UTILITIES
-============================================================ */
 function generateSessionId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export default NepalPayPopup;
+export default FonePayPopup;
