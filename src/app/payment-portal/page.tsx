@@ -49,7 +49,6 @@ export default function PaymentPortal() {
   const [isPreloadingQR, setIsPreloadingQR] = useState<boolean>(false);
 
   const billDetailsRef = useRef<HTMLDivElement | null>(null);
-  const paymentRef = useRef<HTMLDivElement | null>(null);
 
   const electricityOffices: ElectricityOffice[] = [
     { value: "tenant1", label: "Baijanath Gra. B. Ltd. AK22" },
@@ -139,15 +138,11 @@ export default function PaymentPortal() {
     }
 
     // If popup is already mounted, don't re-trigger the preloader
-    if (showPopup) {
-      setTimeout(() => scrollToElement(paymentRef), 100);
-      return;
-    }
+    if (showPopup) return;
 
     setIsPreloadingQR(true);
     setShowPopup(true);
-    setTimeout(() => scrollToElement(paymentRef), 100);
-  }, [paymentDetails, showPopup, isMobile]);
+  }, [paymentDetails, showPopup]);
 
   // Called by popup once the QR string is ready — dismiss the overlay, reveal popup
   const handleQRReady = useCallback(() => {
@@ -243,45 +238,33 @@ export default function PaymentPortal() {
               />
             </div>
 
-            <div ref={paymentRef}>
-              {/* Placeholder — only shown when popup is NOT showing */}
-              {!showPopup && (
-                <div className="w-full max-w-[390px] h-[500px] bg-white overflow-hidden flex flex-col justify-center items-center rounded-xl border border-black/10 text-[var(--card-foreground)] shadow-md gap-4">
-                  <div className="p-5 rounded-full bg-gray-50 border border-gray-100">
-                    <QrCode className="h-12 w-12 text-gray-300" />
-                  </div>
-                  <div className="text-center px-6">
-                    <p className="text-gray-500 font-medium text-sm">
-                      QR code will appear here
-                    </p>
-                    <p className="text-gray-400 text-xs mt-1">
-                      Click Pay to generate your secure payment QR
-                    </p>
-                  </div>
+            <div>
+              <div className="w-full max-w-[390px] h-[500px] bg-white overflow-hidden flex flex-col justify-center items-center rounded-xl border border-black/10 text-[var(--card-foreground)] shadow-md gap-4">
+                <div className="p-5 rounded-full bg-gray-50 border border-gray-100">
+                  <QrCode className="h-12 w-12 text-gray-300" />
                 </div>
-              )}
-
-              {/* Popup — mounted immediately so it can fetch QR in background.
-                  Hidden via invisible wrapper while preloading, revealed once onQRReady fires. */}
-              {showPopup &&
-                paymentDetails &&
-                paymentDetails.billAmount >= 1 && (
-                  <div
-                    className={
-                      isPreloadingQR
-                        ? "invisible pointer-events-none"
-                        : "visible"
-                    }
-                  >
-                    {activeGateway === "FonePay" ? (
-                      <FonePayPopup {...popupProps} />
-                    ) : (
-                      <NepalPayPopup {...popupProps} />
-                    )}
-                  </div>
-                )}
+                <div className="text-center px-6">
+                  <p className="text-gray-500 font-medium text-sm">
+                    QR code will appear here
+                  </p>
+                  <p className="text-gray-400 text-xs mt-1">
+                    Click Pay to generate your secure payment QR
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Popup overlay — mounted when payment is triggered, hidden until QR is ready */}
+          {showPopup && paymentDetails && paymentDetails.billAmount >= 1 && (
+            <div className={isPreloadingQR ? "invisible pointer-events-none" : "visible"}>
+              {activeGateway === "FonePay" ? (
+                <FonePayPopup {...popupProps} />
+              ) : (
+                <NepalPayPopup {...popupProps} />
+              )}
+            </div>
+          )}
 
           <Features />
         </div>

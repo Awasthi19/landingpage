@@ -299,8 +299,11 @@ const NepalPayPopup: React.FC<Props> = ({
 
   if (!isOpen) return null;
 
-  /* ── Inline panel layout (no fixed overlay) ─────────────────────── */
   return (
+    <div
+      className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
+    >
     <div
       className="w-full max-w-[390px] bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden flex flex-col"
       data-testid="nepalpay-panel"
@@ -474,6 +477,7 @@ const NepalPayPopup: React.FC<Props> = ({
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };
