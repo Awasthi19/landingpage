@@ -134,16 +134,16 @@ export const generateFonePayQR = async (
 ) => {
   const paddedId = customerId.padStart(4, "0");
 
-  const cleanName = customerName.replace(/\s+/g, "");
-  const shortName =
-    cleanName.length > 10 ? cleanName.slice(0, 15) + "..." : cleanName;
+  const firstName = customerName.trim().split(" ")[0] || "";
+  const cleanFirstName = firstName.replace(/\s+/g, "");
+  const shortName = cleanFirstName.slice(0, 8);
 
   const response = await axiosClient.post(
     "/api/onlinepay/fonepay/generate-qr",
     {
       transactionAmount,
       customerId: Number(customerId),
-      remarks1: "ELEC_BILL",
+      remarks1: "E-BILL",
       remarks2: `C-${paddedId}_${shortName}`,
       tenant,
     },
