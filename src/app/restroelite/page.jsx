@@ -522,7 +522,7 @@ export default function RestroeliteLanding() {
   const whatsappDemoUrl = `https://wa.me/9779821618622?text=${encodeURIComponent(message)}`;
 
   const downloadLinks = {
-    windows: "https://github.com/Restroelite/releases/releases/download/v1.1.1/restroelite.Setup.1.0.0.exe",
+    windows: "https://github.com/Restroelite/releases/releases/download/v1.1.2/restroelite.Setup.1.0.0.exe",
     android: "https://github.com/Restroelite/releases/releases/download/new/restroelite-v5.2.3.apk",
     web: "https://restroelite.psinepal.com.np",
   };
