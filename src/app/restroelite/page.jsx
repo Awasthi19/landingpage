@@ -523,7 +523,7 @@ export default function RestroeliteLanding() {
 
   const downloadLinks = {
     windows: "https://github.com/Restroelite/releases/releases/download/v1.1.2/restroelite.Setup.1.0.0.exe",
-    android: "https://github.com/Restroelite/releases/releases/download/new/restroelite-v5.2.3.apk",
+    android: "https://github.com/Restroelite/releases/releases/download/v1.1.3/app-release.apk",
     web: "https://restroelite.psinepal.com.np",
   };
 
