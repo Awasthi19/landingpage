@@ -120,6 +120,7 @@ export default function PaymentPortal() {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOffice, customerId, isMobile]);
 
   // Key change: handlePayment triggers a full-screen preloader, then opens the
