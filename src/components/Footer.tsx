@@ -115,8 +115,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/20 mt-12 pt-6 text-center text-white/60 text-sm">
+        <div className="border-t border-white/20 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-center gap-3 text-white/60 text-sm">
           <p>© {new Date().getFullYear()} PSI Technologies. All rights reserved.</p>
+          <span className="hidden sm:inline text-white/30">|</span>
+          <Link href="/privacy-policy" className="hover:text-white transition-colors underline underline-offset-2">
+            Privacy Policy
+          </Link>
         </div>
       </div>
     </footer>
