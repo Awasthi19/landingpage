@@ -12,6 +12,7 @@ interface Props {
   customerId: string
   setCustomerId: (val: string) => void
   isLoading: boolean
+  isTenantLoading: boolean
   handleGetPaymentDetails: () => void
   offices: { value: string; label: string }[]
 }
@@ -22,6 +23,7 @@ export default function PaymentForm({
   customerId,
   setCustomerId,
   isLoading,
+  isTenantLoading,
   handleGetPaymentDetails,
   offices,
 }: Props) {
@@ -37,9 +39,21 @@ export default function PaymentForm({
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="office">Electricity Office</Label>
-          <Select value={selectedOffice} onValueChange={setSelectedOffice}>
+          <Select
+            value={selectedOffice}
+            onValueChange={setSelectedOffice}
+            disabled={isTenantLoading || offices.length === 0}
+          >
             <SelectTrigger>
-              <SelectValue placeholder="Select your electricity office" />
+              <SelectValue
+                placeholder={
+                  isTenantLoading
+                    ? "Loading electricity offices..."
+                    : offices.length === 0
+                      ? "No payment-enabled offices found"
+                      : "Select your electricity office"
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               {offices.map((office) => (

@@ -39,8 +39,6 @@ interface Props {
   onQRReady?: () => void;
   maxDuration?: number;
   onAnalyticsEvent?: (event: string, data?: Record<string, any>) => void;
-  bankLogoSrc?: string;
-  bankLogoAlt?: string;
 }
 
 /* ============================================================
@@ -68,8 +66,6 @@ const FonePayPopup: React.FC<Props> = ({
   onQRReady,
   maxDuration = DEFAULT_MAX_DURATION,
   onAnalyticsEvent,
-  bankLogoSrc,
-  bankLogoAlt,
 }) => {
   const [qr, setQr] = useState<FonePayQrDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -160,7 +156,7 @@ const FonePayPopup: React.FC<Props> = ({
         const elapsed = Date.now() - startTimeRef.current;
         if (elapsed > maxDuration) {
           stopPolling();
-          setError("Payment session expired. Please try again.");
+          setError("भुक्तानी समय सकियो। कृपया पुन: प्रयास गर्नुहोस्।");
           trackEvent("payment_timeout", { elapsed });
           onFailedRef.current("Payment timeout");
           return;
@@ -228,10 +224,14 @@ const FonePayPopup: React.FC<Props> = ({
           { signal: controller.signal },
         );
         if (!isMountedRef.current) return;
-        if (res?.status !== "SUCCESS" || !res?.qrMessage || !res?.prn) {
+        if (!res?.qrMessage || !res?.prn) {
           throw new Error(res?.message || "FonePay QR generation failed");
         }
-        setQr({ prn: res.prn, qrMessage: res.qrMessage, status: res.status });
+        setQr({
+          prn: res.prn,
+          qrMessage: res.qrMessage,
+          status: res.paymentStatus || "PENDING",
+        });
         setRetryCount(0);
         trackEvent("qr_generation_success", { prn: res.prn });
         // 🔑 Notify parent that QR is ready — parent hides full-screen overlay
@@ -252,7 +252,7 @@ const FonePayPopup: React.FC<Props> = ({
           return generateQRWithRetry(attempt + 1);
         }
         if (isMountedRef.current) {
-          setError("Unable to generate FonePay QR code. Please try again.");
+          setError("FonePay QR बनाउन सकिएन। कृपया पुन: प्रयास गर्नुहोस्।");
           // Also notify parent on failure so overlay is dismissed
           onQRReadyRef.current?.();
           onFailedRef.current("QR generation failed");
@@ -261,7 +261,7 @@ const FonePayPopup: React.FC<Props> = ({
         if (isMountedRef.current) setLoading(false);
       }
     },
-    [amount, customerId, tenant, startPolling, trackEvent],
+    [amount, customerId, tenant, customerName, startPolling, trackEvent],
   );
 
   useEffect(() => {
@@ -297,20 +297,26 @@ const FonePayPopup: React.FC<Props> = ({
       className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
-    <div className="w-full max-w-[390px] bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden flex flex-col">
+    <div
+      className="w-full max-w-[390px] bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden flex flex-col"
+      style={{
+        fontFamily:
+          "var(--font-noto-devanagari), Noto Sans Devanagari, system-ui, sans-serif",
+      }}
+    >
       {/* ── Header bar ── */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
         <div>
           <p className="text-sm font-semibold text-gray-800">FonePay</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            Scan QR to complete payment
+            भुक्तानी पूरा गर्न QR स्क्यान गर्नुहोस्
           </p>
         </div>
         <button
           onClick={handleClose}
           disabled={loading && !error}
           className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-40"
-          aria-label="Close"
+          aria-label="बन्द गर्नुहोस्"
         >
           <X size={16} className="text-gray-500" />
         </button>
@@ -319,7 +325,7 @@ const FonePayPopup: React.FC<Props> = ({
       {/* ── Amount pill ── */}
       {!error && (
         <div className="mx-5 mt-4 mb-2 flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
-          <span className="text-xs text-gray-500 font-medium">Amount due</span>
+          <span className="text-xs text-gray-500 font-medium">तिर्नुपर्ने रकम</span>
           <span className="text-base font-bold text-gray-900">
             रू {amount.toLocaleString("ne-NP")}
           </span>
@@ -336,7 +342,7 @@ const FonePayPopup: React.FC<Props> = ({
             <AlertCircle className="text-red-500" size={32} />
           </div>
           <div>
-            <p className="text-gray-800 font-semibold">Something went wrong</p>
+            <p className="text-gray-800 font-semibold">केही समस्या भयो</p>
             <p className="text-gray-500 text-sm mt-1">{error}</p>
           </div>
           <div className="flex gap-2 mt-2">
@@ -344,13 +350,13 @@ const FonePayPopup: React.FC<Props> = ({
               onClick={handleRetry}
               className="flex items-center gap-2 px-4 py-2 bg-[#06476d] text-white text-sm font-medium rounded-lg hover:bg-[#053d5e] transition-colors"
             >
-              <RefreshCw size={14} /> Try again
+              <RefreshCw size={14} /> पुन: प्रयास गर्नुहोस्
             </button>
             <button
               onClick={handleClose}
               className="px-4 py-2 border border-gray-200 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              रद्द गर्नुहोस्
             </button>
           </div>
         </div>
@@ -363,7 +369,7 @@ const FonePayPopup: React.FC<Props> = ({
           <img
             src="/img/fonepayqrtagline.png"
             alt="FonePay"
-            className="h-8 object-contain"
+            className="h-6 object-contain"
           />
 
           {/* QR frame */}
@@ -381,7 +387,7 @@ const FonePayPopup: React.FC<Props> = ({
                 bgColor="transparent"
                 fgColor={completed ? "#16a34a" : "#111827"}
                 level="M"
-                aria-label="FonePay QR Code"
+                aria-label="FonePay QR कोड"
               />
               {/* Logo overlay — positioned on top of the excavated zone */}
               {!completed && (
@@ -408,12 +414,17 @@ const FonePayPopup: React.FC<Props> = ({
                 <div className="flex flex-col items-center gap-2">
                   <CheckCircle2 className="text-green-500" size={52} />
                   <p className="text-green-700 font-semibold text-sm">
-                    Payment received!
+                    भुक्तानी प्राप्त भयो!
                   </p>
                 </div>
               </div>
             )}
           </div>
+
+          <p className="text-center text-xs font-medium leading-relaxed text-gray-500">
+            यो QR को screenshot गर्नुहोस् र bank/wallet बाट QR scan गरी तिर्नुहोस।
+            यो QR एक पटक भुक्तानीका लागि मात्र मान्य हुनेछ।
+          </p>
 
           {/* Offline warning */}
           {!completed && !isOnline && (
@@ -421,36 +432,34 @@ const FonePayPopup: React.FC<Props> = ({
               className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg text-xs w-full justify-center"
               role="alert"
             >
-              <WifiOff size={13} /> No internet — payment status may be delayed
+              <WifiOff size={13} /> इन्टरनेट छैन - भुक्तानी स्थिति ढिलो देखिन सक्छ
             </div>
-          )}
-
-          {/* Bank logo */}
-          {bankLogoSrc && (
-            <img
-              src={bankLogoSrc}
-              alt={bankLogoAlt || "Bank"}
-              className="h-8 object-contain"
-            />
           )}
 
           {/* Status pill */}
           <div
-            className={`w-full py-2.5 rounded-xl text-center text-sm font-semibold transition-colors duration-500 ${
+            className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-colors duration-500 flex items-center justify-center gap-2 ${
               completed
                 ? "bg-green-500 text-white"
                 : "bg-gray-100 text-gray-500"
             }`}
           >
-            {completed ? "✓ Payment Confirmed" : "Waiting for payment…"}
+            {completed ? (
+              "भुक्तानी पुष्टि भयो"
+            ) : (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                भुक्तानीको प्रतीक्षा हुँदैछ...
+              </>
+            )}
           </div>
 
           {/* Accepted apps */}
           <div className="flex flex-col items-center gap-1.5 w-full">
-            <p className="text-xs text-gray-400 font-medium">Pay using</p>
+            <p className="text-xs text-gray-400 font-medium">भुक्तानी माध्यमहरु</p>
             <img
               src="/img/pay-using-fonepay.png"
-              alt="Supported payment methods"
+              alt="समर्थित भुक्तानी माध्यमहरू"
               className="h-7 object-contain"
             />
           </div>

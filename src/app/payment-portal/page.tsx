@@ -4,14 +4,14 @@ import { Zap, QrCode } from "lucide-react";
 import Header from "@/components/payment-portal-components/header";
 import PaymentForm from "@/components/payment-portal-components/paymentform";
 import BillDetails from "@/components/payment-portal-components/billdetails";
-import NepalPayPopup from "@/components/payment-portal-components/nepalpay";
 import FonePayPopup from "@/components/payment-portal-components/fonepay";
 import Features from "@/components/payment-portal-components/features";
+import AppAnnouncement from "@/components/payment-portal-components/appannouncement";
 import { Loader2 } from "lucide-react";
 
 import {
   getPaymentDetails,
-  getOnlinePaymentMethod,
+  getOnlinePaymentEnabledTenants,
 } from "../../api/paymentservices";
 
 interface PaymentDetails {
@@ -32,33 +32,24 @@ interface ElectricityOffice {
   label: string;
 }
 
-type PaymentGateway = "NepalPay" | "FonePay" | null;
-
 export default function PaymentPortal() {
   const [selectedOffice, setSelectedOffice] = useState<string>("");
   const [customerId, setCustomerId] = useState<string>("");
+  const [electricityOffices, setElectricityOffices] = useState<
+    ElectricityOffice[]
+  >([]);
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(
     null,
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isTenantLoading, setIsTenantLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [activeGateway, setActiveGateway] = useState<PaymentGateway>(null);
 
   // Global preload state — QR is being fetched before the popup opens
   const [isPreloadingQR, setIsPreloadingQR] = useState<boolean>(false);
 
   const billDetailsRef = useRef<HTMLDivElement | null>(null);
-
-  const electricityOffices: ElectricityOffice[] = [
-    { value: "tenant1", label: "Baijanath Gra. B. Ltd. AK22" },
-    { value: "tenant2", label: "Baitada Gra. B. Ltd. LR.17B" },
-  ];
-
-  const bankLogos: Record<string, { src: string; alt: string }> = {
-    tenant1: { src: "/img/lumbini-logo.png", alt: "Lumbini Bikas Bank" },
-    tenant2: { src: "/img/nmb-logo.png", alt: "NMB Bank" },
-  };
 
   useEffect(() => {
     const checkIsMobile = () => setIsMobile(window.innerWidth < 1280);
@@ -78,18 +69,44 @@ export default function PaymentPortal() {
     }
   };
 
-  const handleOfficeChange = useCallback(async (office: string) => {
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadTenants = async () => {
+      setIsTenantLoading(true);
+      try {
+        const tenants = await getOnlinePaymentEnabledTenants({
+          signal: controller.signal,
+        });
+        setElectricityOffices(
+          tenants.map((tenant) => ({
+            value: tenant.identifier,
+            label: tenant.name,
+          })),
+        );
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          (error.name === "AbortError" || error.name === "CanceledError")
+        ) {
+          return;
+        }
+        console.error("Failed to fetch online payment tenants:", error);
+        setElectricityOffices([]);
+      } finally {
+        setIsTenantLoading(false);
+      }
+    };
+
+    loadTenants();
+
+    return () => controller.abort();
+  }, []);
+
+  const handleOfficeChange = useCallback((office: string) => {
     setSelectedOffice(office);
-    setActiveGateway(null);
     setShowPopup(false);
     setPaymentDetails(null);
-    if (!office) return;
-    try {
-      const method = await getOnlinePaymentMethod(office);
-      setActiveGateway(method?.name === "FonePay" ? "FonePay" : "NepalPay");
-    } catch {
-      setActiveGateway("NepalPay");
-    }
   }, []);
 
   const handleGetPaymentDetails = useCallback(async () => {
@@ -102,11 +119,11 @@ export default function PaymentPortal() {
       const data = await getPaymentDetails(customerId, selectedOffice);
       const mappedDetails: PaymentDetails = {
         customerName: data.customerName,
-        address: data.address,
-        meterSerialNumber: data.meterSerialNumber,
+        address: data.address ?? "-",
+        meterSerialNumber: data.meterSerialNumber ?? "-",
         customerType: data.customerType,
         billAmount: data.billAmount,
-        charges: data.charges.map((c: Charge) => ({
+        charges: (data.charges ?? []).map((c: Charge) => ({
           id: c.id,
           description: c.description,
           amount: c.amount,
@@ -173,13 +190,12 @@ export default function PaymentPortal() {
     onPaymentSuccess: handlePaymentSuccess,
     onPaymentFailed: handlePaymentFailed,
     onQRReady: handleQRReady,
-    bankLogoSrc: bankLogos[selectedOffice]?.src,
-    bankLogoAlt: bankLogos[selectedOffice]?.alt,
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
+      <AppAnnouncement />
 
       {/* Full-screen QR preload overlay */}
       {isPreloadingQR && (
@@ -227,6 +243,7 @@ export default function PaymentPortal() {
               customerId={customerId}
               setCustomerId={setCustomerId}
               isLoading={isLoading}
+              isTenantLoading={isTenantLoading}
               handleGetPaymentDetails={handleGetPaymentDetails}
               offices={electricityOffices}
             />
@@ -259,11 +276,7 @@ export default function PaymentPortal() {
           {/* Popup overlay — mounted when payment is triggered, hidden until QR is ready */}
           {showPopup && paymentDetails && paymentDetails.billAmount >= 1 && (
             <div className={isPreloadingQR ? "invisible pointer-events-none" : "visible"}>
-              {activeGateway === "FonePay" ? (
-                <FonePayPopup {...popupProps} />
-              ) : (
-                <NepalPayPopup {...popupProps} />
-              )}
+              <FonePayPopup {...popupProps} />
             </div>
           )}
 

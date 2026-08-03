@@ -39,8 +39,8 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-600 pl-2">
               <li>
-                <strong>Customers</strong> — who look up their electricity bill and pay online via QR-based
-                payment gateways (FonePay, NepalPay).
+                <strong>Customers</strong> — who look up their electricity bill and pay online via the FonePay
+                QR-based payment gateway.
               </li>
               <li>
                 <strong>Administrators (Meter Readers)</strong> — cooperative staff who conduct field meter
@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
                   </tr>
                   <tr className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium text-gray-700">Payment transaction details</td>
-                    <td className="px-4 py-3 text-gray-600">Passed to FonePay / NepalPay to generate a payment QR; we do not store card or wallet credentials</td>
+                    <td className="px-4 py-3 text-gray-600">Passed to FonePay to generate a payment QR; we do not store card or wallet credentials</td>
                   </tr>
                 </tbody>
               </table>
@@ -139,7 +139,7 @@ export default function PrivacyPolicyPage() {
             <ul className="space-y-3 text-gray-600">
               {[
                 ["Bill lookup and display", "Customer ID and cooperative selection are sent to the cooperative's server to retrieve your outstanding bill."],
-                ["Payment QR generation", "Bill amount and customer reference are forwarded to FonePay or NepalPay to produce a one-time dynamic QR code."],
+                ["Payment QR generation", "Bill amount and customer reference are forwarded to FonePay to produce a one-time dynamic QR code."],
                 ["Payment status polling", "The App automatically checks payment status every 5 seconds after a QR is displayed, until payment is confirmed or the dialog is closed."],
                 ["Meter reading workflow", "Route data is downloaded to the device for offline use; meter readings are stored locally and uploaded when the administrator initiates a sync."],
                 ["Session management", "Administrator login sessions are stored locally to avoid repeated logins during a field session."],
@@ -224,11 +224,6 @@ export default function PrivacyPolicyPage() {
                       </a>
                     </td>
                   </tr>
-                  <tr className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-700">NepalPay</td>
-                    <td className="px-4 py-3 text-gray-600">QR payment processing</td>
-                    <td className="px-4 py-3 text-gray-600">Refer to your cooperative or NepalPay's published policy</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -249,7 +244,7 @@ export default function PrivacyPolicyPage() {
             <ul className="space-y-3 text-gray-600">
               {[
                 "With the cooperative's API server to provide bill lookup, route data download, and reading upload features.",
-                "With FonePay or NepalPay (the active gateway) solely to generate and verify a payment QR code.",
+                "With FonePay solely to generate and verify a payment QR code.",
                 "If required by law — in response to a lawful request from government or regulatory authorities.",
               ].map((item) => (
                 <li key={item} className="flex gap-3">

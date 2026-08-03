@@ -9,7 +9,7 @@
 
 eBijuli ("the App", "we", "our") is a mobile application developed by **PSI** for electricity cooperatives and their customers in Nepal. The App serves two distinct user groups:
 
-- **Customers** — who look up their electricity bill and pay online via QR-based payment gateways (FonePay, NepalPay).
+- **Customers** — who look up their electricity bill and pay online via the FonePay QR-based payment gateway.
 - **Administrators (Meter Readers)** — cooperative staff who conduct field meter readings, generate invoices, and collect payments.
 
 This Privacy Policy explains what information we collect, how we use it, who we share it with, and your rights regarding your data.
@@ -25,7 +25,7 @@ This Privacy Policy explains what information we collect, how we use it, who we 
 | **Cooperative selection** (e.g., office name) | Identify the billing entity to query |
 | **Customer ID / Account Number** | Fetch your specific bill from the cooperative's server |
 | **Bill details** (name, address, meter number, amount due) | Display payment information; these are fetched from the cooperative's system, not stored by the App |
-| **Payment transaction details** | Passed to FonePay / NepalPay to generate a payment QR; we do not store card or wallet credentials |
+| **Payment transaction details** | Passed to FonePay to generate a payment QR; we do not store card or wallet credentials |
 
 > Customers do not create an account in the App. No passwords, emails, or personal contact details are collected from customer users.
 
@@ -48,7 +48,7 @@ The App does **not** collect analytics, crash telemetry, advertising identifiers
 ## 3. How We Use Your Information
 
 - **Bill lookup and display** — Customer ID and cooperative selection are sent to the cooperative's server to retrieve your outstanding bill.
-- **Payment QR generation** — Bill amount and customer reference are forwarded to FonePay or NepalPay (whichever the cooperative has configured) to produce a one-time dynamic QR code.
+- **Payment QR generation** — Bill amount and customer reference are forwarded to FonePay to produce a one-time dynamic QR code.
 - **Payment status polling** — The App automatically checks payment status every 5 seconds after a QR is displayed, until payment is confirmed or the dialog is closed.
 - **Meter reading workflow** — Route data is downloaded to the device for offline use; meter readings are stored locally and uploaded when the administrator initiates a sync.
 - **Session management** — Administrator login sessions are stored locally to avoid repeated logins during a field session.
@@ -75,7 +75,6 @@ The App integrates with the following third-party payment gateways. Each has its
 | Service | Role | Privacy Policy |
 |---|---|---|
 | **FonePay** | QR payment processing | https://fonepay.com/privacy-policy |
-| **NepalPay** | QR payment processing | (refer to your cooperative or NepalPay's published policy) |
 
 The cooperative's own server API receives customer IDs, bill queries, meter readings, and payment confirmations. Data handling on the server side is governed by the respective cooperative's data policies.
 
@@ -86,7 +85,7 @@ The cooperative's own server API receives customer IDs, bill queries, meter read
 We do **not** sell, trade, or rent personal information to third parties. Data is shared only:
 
 - With the **cooperative's API server** to provide bill lookup, route data download, and reading upload features.
-- With **FonePay or NepalPay** (the active gateway) solely to generate and verify a payment QR code.
+- With **FonePay** solely to generate and verify a payment QR code.
 - If **required by law** — in response to a lawful request from government or regulatory authorities.
 
 ---
