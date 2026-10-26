@@ -213,8 +213,8 @@ export default function RippleLanding() {
         </button>
       </div>
 
-      <footer className="site-footer"><div className="footer-brand"><a className="brand" href="#top"><RippleMark /> ripple</a><p>Hospitality management software for teams that want a calmer, clearer way to run service.</p></div><div className="footer-links"><a href="#product">Product</a><a href="#why-ripple">Features</a><a href="#how-it-works">How it works</a><a href={webAppUrl} target="_blank" rel="noreferrer">Open app</a></div></footer>
-      <div className="footer-note">© 2025 Ripple. A PSI Technologies product.</div>
+      <footer className="site-footer"><div className="footer-brand"><a className="brand" href="#top"><RippleMark /> ripple</a><p>Hospitality management software for teams that want a calmer, clearer way to run service.</p></div><div className="footer-links"><a href="#product">Product</a><a href="#why-ripple">Features</a><a href="#how-it-works">How it works</a><a href={webAppUrl} target="_blank" rel="noreferrer">Open app</a><a href="/ripple/privacy-policy">Privacy policy</a></div></footer>
+      <div className="footer-note">© {new Date().getFullYear()} Ripple. A PSI Technologies product.</div>
     </main>
   );
 }
