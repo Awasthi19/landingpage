@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 
 const whatsappNumber = "9779821618622";
-const webAppUrl = "https://restroelite.psinepal.com.np";
-const demoAccountUrl = "https://restroelite.psinepal.com.np";
+const webAppUrl = "https://ripple.psinepal.com.np";
+const demoAccountUrl = "https://ripple.psinepal.com.np/login?demo=1";
 
 const featureGroups = [
   {
