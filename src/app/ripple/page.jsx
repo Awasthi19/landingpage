@@ -43,11 +43,11 @@ const trustItems = [
 ];
 
 function RippleMark({ className = "" }) {
-  return <img src="/restroelite/FAVICON-V2.png" alt="" aria-hidden="true" className={`ripple-mark ${className}`} />;
+  return <img src="/restroelite/ripplehmsicon-01.png" alt="" aria-hidden="true" className={`ripple-mark ${className}`} />;
 }
 
 function RippleLogo({ className = "" }) {
-  return <img src="/restroelite/ICON-FULL-V2.svg" alt="Ripple" className={`ripple-logo ${className}`} />;
+  return <img src="/restroelite/ripplehmsfullicon.svg" alt="Ripple" className={`ripple-logo ${className}`} />;
 }
 
 function CheckIcon() {
@@ -121,7 +121,7 @@ export default function RippleLanding() {
     document.title = "Ripple - Nepal’s Trusted Hospitality Management Software";
     const favicon = document.querySelector("link[rel='icon']") || document.createElement("link");
     favicon.rel = "icon";
-    favicon.href = "/restroelite/favicon.ico";
+    favicon.href = "/restroelite/ripplehmsicon-01.png";
     document.head.appendChild(favicon);
   }, []);
 

@@ -87,7 +87,7 @@ export default function RipplePrivacyPolicyPage() {
 
       <header className="policy-topbar">
         <Link className="policy-brand" href="/ripple" aria-label="Ripple home">
-          <img src="/restroelite/FAVICON-V2.png" alt="" aria-hidden="true" />
+          <img src="/restroelite/ripplehmsicon-01.png" alt="" aria-hidden="true" />
           <span>ripple</span>
         </Link>
         <Link className="policy-back" href="/ripple">← Back to Ripple</Link>
