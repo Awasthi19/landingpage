@@ -301,7 +301,7 @@ const FonePayPopup: React.FC<Props> = ({
       className="w-full max-w-[390px] bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden flex flex-col"
       style={{
         fontFamily:
-          "var(--font-noto-devanagari), Noto Sans Devanagari, system-ui, sans-serif",
+          "var(--font-noto-devanagari, 'Noto Sans Devanagari'), system-ui, sans-serif",
       }}
     >
       {/* ── Header bar ── */}

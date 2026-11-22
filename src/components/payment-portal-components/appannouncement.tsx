@@ -38,7 +38,7 @@ export default function AppAnnouncement() {
         className="relative w-full max-w-[440px] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-2xl"
         style={{
           fontFamily:
-            "var(--font-noto-devanagari), Noto Sans Devanagari, system-ui, sans-serif",
+            "var(--font-noto-devanagari, 'Noto Sans Devanagari'), system-ui, sans-serif",
         }}
       >
         <button
